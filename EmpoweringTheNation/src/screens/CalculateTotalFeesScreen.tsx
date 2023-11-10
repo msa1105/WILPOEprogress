@@ -1,41 +1,55 @@
 import React, { useState } from 'react';
-import { View, Text, Button, CheckBox } from 'react-native';
+import { View, Text, Button } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 import { CalculateTotalFeesScreenNavigationProp } from './RootStackParamList';
+import Course from './Course';
+import { shortCourses, sixMonthCourses } from './courseData';
 
 type Props = {
   navigation: CalculateTotalFeesScreenNavigationProp;
 };
 
 const CalculateTotalFeesScreen: React.FC<Props> = ({ navigation }) => {
-  const [courses, setCourses] = useState({
-    firstAid: false,
-    // Will Add more course checkboxes here
-  });
+  const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
 
-  const courseFees = {
-    firstAid: 1500,
-    // Will Add corresponding fees for other courses here
+  const toggleCourseSelection = (course: Course) => {
+    const isSelected = selectedCourses.some((selectedCourse) => selectedCourse.id === course.id);
+    if (isSelected) {
+      setSelectedCourses(selectedCourses.filter((selectedCourse) => selectedCourse.id !== course.id));
+    } else {
+      setSelectedCourses([...selectedCourses, course]);
+    }
   };
 
   const calculateTotalFees = () => {
     let totalFees = 0;
-    for (const course in courses) {
-      if (courses[course]) {
-        totalFees += courseFees[course];
-      }
-    }
+    selectedCourses.forEach((course) => {
+      totalFees += course.fee;
+    });
     return totalFees;
   };
+
+  const renderCourseCheckbox = (course: Course) => (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }} key={course.id}>
+      <CheckBox
+        value={selectedCourses.some((selectedCourse) => selectedCourse.id === course.id)}
+        onValueChange={() => toggleCourseSelection(course)}
+      />
+      <Text>{`${course.title} - R${course.fee}`}</Text>
+    </View>
+  );
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
       <Text>Select Courses</Text>
-      <View style={{ marginVertical: 8 }}>
-        <CheckBox value={courses.firstAid} onValueChange={() => setCourses({ ...courses, firstAid: !courses.firstAid })} />
-        <Text>First Aid - R1500</Text>
-      </View>
-      {/* Add more course checkboxes here */}
-      <Text>Total Fees: R{calculateTotalFees()}</Text>
+
+      <Text>Short Courses:</Text>
+      {shortCourses.map((course) => renderCourseCheckbox(course))}
+
+      <Text>Six-Month Courses:</Text>
+      {sixMonthCourses.map((course) => renderCourseCheckbox(course))}
+
+      <Text>Total Fees: R{calculateTotalFees().toFixed(2)}</Text>
       <Button title="Next" onPress={() => navigation.navigate('ContactDetails')} />
     </View>
   );

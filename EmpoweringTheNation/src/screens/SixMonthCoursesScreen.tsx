@@ -1,32 +1,28 @@
+// SixMonthCoursesScreen.tsx
+
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { SixMonthCoursesScreenNavigationProp } from './RootStackParamList';
+import { View, Text } from 'react-native';
+import type { SixMonthCoursesScreenNavigationProp } from './RootStackParamList';
+import Course from './Course';
 
 type Props = {
   navigation: SixMonthCoursesScreenNavigationProp;
+  route: {
+    params: {
+      course: Course;
+    };
+  };
 };
 
-const SixMonthCoursesScreen: React.FC<Props> = ({ navigation }) => {
-  const sixMonthCoursesData = [
-    { id: '1', title: 'First Aid', fee: 1500 },
-    // Will Add more six-month courses here
-  ];
+const SixMonthCoursesScreen: React.FC<Props> = ({ route }) => {
+  const { course } = route.params;
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <Text>Six-Month Courses</Text>
-      <FlatList
-        data={sixMonthCoursesData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.navigate('CourseDetails', { course: item })}>
-            <View style={{ marginVertical: 8 }}>
-              <Text>{item.title}</Text>
-              <Text>Fee: R{item.fee}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+    <View>
+      <Text>{course.title}</Text>
+      <Text>{course.fee}</Text>
+      <Text>{course.purpose}</Text>
+      <Text>{course.content.join('\n')}</Text> {/* Join content array elements into a string */}
     </View>
   );
 };

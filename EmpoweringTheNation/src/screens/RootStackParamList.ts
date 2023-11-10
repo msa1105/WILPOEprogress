@@ -1,4 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
+import Course from './Course';
 
 type RootStackParamList = {
   Home: undefined;
